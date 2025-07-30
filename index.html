@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技强省·创新突破 - 2025山东省新媒体产品主题创作</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- 引入 Chart.js 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入 Swiper.js 轮播库 -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- 引入中文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- 知识问答题库 (已清空，请在此处添加您的问题) -->
+    <script type="application/json" id="quizData">
+    [
+        
+        <!-- 
+            请在这里添加你的科技主题问题。
+            格式示例:
+            {
+                "question": "中国(山东)自由贸易试验区不包含以下哪个片区？",
+                "options": ["济南片区", "青岛片区", "烟台片区", "威海片区"],
+                "correct": 3
+            } 
+            注意：每个问题对象之间用逗号(,)隔开，最后一个问题对象后面不要加逗号。
+        -->
+
+    ]
+    </script>
+
+    <script>
+        // 暗色模式支持
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <style>
+        * {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        /* 主色彩系统 - 科技蓝为主 */
+        .shandong-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #4f46e5 100%);
+            position: relative;
+        }
+
+        .shandong-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white" opacity="0.1"/><circle cx="60" cy="40" r="0.5" fill="white" opacity="0.1"/><path d="M10 80 L30 60 L50 80" stroke="white" stroke-width="0.2" fill="none" opacity="0.1"/><path d="M70 20 L80 30 L90 10" stroke="white" stroke-width="0.2" fill="none" opacity="0.1"/></svg>');
+            background-size: 150px 150px;
+        }
+
+        .shandong-red {
+            background: #4f46e5;
+        }
+        /* 动画优化 */
+        .floating { animation: float 8s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(10deg); }
+            66% { transform: translateY(-5px) rotate(-8deg); }
+        }
+        /* 城市画廊增强 */
+        .city-swiper { width: 100%; height: 85vh; border-radius: 16px; overflow: hidden; }
+        .swiper-slide { position: relative; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+        .swiper-slide::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.8) 100%); }
+        .swiper-button-next, .swiper-button-prev { color: #ffffff; background: rgba(0, 0, 0, 0.3); width: 50px; height: 50px; border-radius: 50%; backdrop-filter: blur(10px); }
+        .swiper-pagination-bullet { background: rgba(255, 255, 255, 0.5); width: 12px; height: 12px; }
+        .swiper-pagination-bullet-active { background: #ffffff; transform: scale(1.2); }
+        .slide-content { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); animation: slideInUp 0.8s ease-out; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        /* 城市详情按钮 */
+        .city-detail-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; }
+        .city-detail-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        /* 问答界面增强 */
+        .quiz-container { background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%); border-radius: 24px; border: 2px solid rgba(139, 92, 246, 0.2); }
+        .quiz-option { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 12px; position: relative; overflow: hidden; }
+        .quiz-option:hover { background: rgba(99, 102, 241, 0.1); transform: translateX(8px) scale(1.02); border-color: rgba(139, 92, 246, 0.4); }
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring-circle { transition: stroke-dashoffset 0.8s ease-in-out; }
+        /* 数据卡片优化 */
+        .stat-card { background: #ffffff; border: 1px solid #e5e7eb; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border-color: #3b82f6; }
+        .dark .stat-card { background: #1f2937; border-color: #374151; }
+        .dark .stat-card:hover { border-color: #6366f1; }
+        /* 导航增强 */
+        .nav-btn { position: relative; transition: all 0.3s ease; }
+        .nav-btn::after { content: ''; position: absolute; bottom: -4px; left: 50%; width: 0; height: 2px; background: #6366f1; transition: all 0.3s ease; transform: translateX(-50%); }
+        .nav-btn:hover::after { width: 100%; }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+        /* 模块卡片样式 */
+        .module-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; }
+        .module-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); background: rgba(255, 255, 255, 0.15); }
+        .dark .module-card { background: rgba(31, 41, 55, 0.5); border-color: rgba(75, 85, 99, 0.4); }
+        .dark .module-card:hover { background: rgba(31, 41, 55, 0.7); }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- 导航栏 -->
+    <nav
+        class="fixed top-0 w-full z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-lg border-b border-gray-200/50 dark:border-gray-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 shandong-red rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold text-gray-900 dark:text-white">科技强省·创新突破</span>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">2025主题创作</div>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="showSection('home')"
+                        class="nav-btn text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium px-2 py-1">创新总览</button>
+                    <button onclick="showSection('map')"
+                        class="nav-btn text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium px-2 py-1">城市案例</button>
+                    <button onclick="showSection('quiz')"
+                        class="nav-btn text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium px-2 py-1">知识问答</button>
+                    <button onclick="showSection('stats')"
+                        class="nav-btn text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium px-2 py-1">数据洞察</button>
+                </div>
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()"
+                        class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 p-2 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu"
+            class="hidden md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <button onclick="showSection('home'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">创新总览</button>
+                <button onclick="showSection('map'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">城市案例</button>
+                <button onclick="showSection('quiz'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">知识问答</button>
+                <button onclick="showSection('stats'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">数据洞察</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页面 (创新总览) -->
+    <div id="home" class="section pt-16 min-h-screen shandong-bg relative overflow-hidden">
+        <div class="absolute inset-0 z-0">
+             <div class="floating absolute top-20 left-10 w-24 h-24 bg-white/10 rounded-full backdrop-blur-sm"></div>
+             <div class="floating absolute top-40 right-20 w-20 h-20 bg-blue-400/20 rounded-full backdrop-blur-sm" style="animation-delay: 2s;"></div>
+             <div class="floating absolute bottom-32 left-1/4 w-16 h-16 bg-purple-500/15 rounded-full backdrop-blur-sm" style="animation-delay: 4s;"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center mb-16">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">科技强省 <span class="text-cyan-400 block md:inline">创新突破</span></h1>
+                <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">聚焦山东建设创新型省份战略，展现科技创新驱动高质量发展的澎湃动力</p>
+                <div class="text-lg text-white/80 max-w-5xl mx-auto leading-relaxed">
+                    <p>山东正加速建设高水平创新型省份，以科技创新塑造发展新优势。从前沿的量子科技、深邃的海洋探索，到赋能千行百业的工业互联网，再到服务国计民生的超级计算，齐鲁大地正成为全国重要的科技创新策源地和成果转化集聚地。</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 text-white">
+                <div class="module-card rounded-2xl p-8 text-center group">
+                    <div class="w-20 h-20 bg-blue-500/50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M4 17v4m-2-2h4m11-11v4m-2-2h4M16 17v4m-2-2h4"></path></svg></div>
+                    <h3 class="text-2xl font-bold mb-3">核心技术攻坚</h3>
+                    <p class="text-white/80 text-lg leading-relaxed">在量子科技、海洋装备、高端芯片等领域持续突破，抢占未来产业制高点。</p>
+                </div>
+                <div class="module-card rounded-2xl p-8 text-center group">
+                    <div class="w-20 h-20 bg-green-500/50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21v-2.5M12 18.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"></path></svg></div>
+                    <h3 class="text-2xl font-bold mb-3">产业数字化</h3>
+                    <p class="text-white/80 text-lg leading-relaxed">以工业互联网赋能传统产业转型升级，打造智能制造、智慧农业新模式。</p>
+                </div>
+                <div class="module-card rounded-2xl p-8 text-center group">
+                    <div class="w-20 h-20 bg-purple-500/50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                    <h3 class="text-2xl font-bold mb-3">科创平台建设</h3>
+                    <p class="text-white/80 text-lg leading-relaxed">建设国家实验室、大科学装置、产业研究院等高能级平台，集聚全球创新资源。</p>
+                </div>
+                <div class="module-card rounded-2xl p-8 text-center group">
+                    <div class="w-20 h-20 bg-orange-500/50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                    <h3 class="text-2xl font-bold mb-3">“专精特新”培育</h3>
+                    <p class="text-white/80 text-lg leading-relaxed">培育一大批掌握独门绝技的“隐形冠军”，构建起强大的产业创新生态。</p>
+                </div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                <h2 class="text-3xl font-bold text-white text-center mb-8">山东创新力亮点</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
+                    <div><div class="text-3xl md:text-4xl font-bold mb-2">30000+</div><div class="text-lg opacity-90">高新技术企业</div><div class="text-sm opacity-70">2024年</div></div>
+                    <div><div class="text-3xl md:text-4xl font-bold mb-2">TOP 3</div><div class="text-lg opacity-90">国家级“灯塔工厂”</div><div class="text-sm opacity-70">全国前列</div></div>
+                    <div><div class="text-3xl md:text-4xl font-bold mb-2">NO. 1</div><div class="text-lg opacity-90">海洋科技实力</div><div class="text-sm opacity-70">全国领先</div></div>
+                    <div><div class="text-3xl md:text-4xl font-bold mb-2">1500+</div><div class="text-lg opacity-90">省级创新平台</div><div class="text-sm opacity-70">产学研深度融合</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 城市画廊 (城市案例) -->
+    <div id="map" class="section hidden pt-16 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+        <div class="max-w-screen-xl mx-auto py-16 px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold text-white mb-4">科技创新城市巡礼</h2>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto">探索山东16市的创新基因，见证科技如何重塑城市未来</p>
+            </div>
+            <div class="swiper city-swiper shadow-2xl">
+                <div class="swiper-wrapper"></div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 知识问答 (已恢复) -->
+    <div id="quiz"
+        class="section hidden pt-24 min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-800 dark:via-purple-900 dark:to-gray-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                    山东科技创新知识问答
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    测试你对山东科技创新成就的了解，在互动中学习新知
+                </p>
+            </div>
+            <div class="quiz-container p-8 shadow-2xl">
+                <div id="quizGame">
+                    <div id="quizLoading" class="text-center text-gray-600 dark:text-gray-400 py-12">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+                        <div>正在加载题库...</div>
+                    </div>
+                    <div id="quizContent" class="hidden">
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">答题进度</span>
+                                <span id="questionCounter" class="text-sm font-medium text-purple-600 dark:text-purple-400"></span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                                <div id="progressBar" class="bg-purple-600 h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="questionContainer" class="mb-8">
+                            <h3 id="questionText" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8 leading-relaxed"></h3>
+                            <div id="optionsContainer" class="space-y-4"></div>
+                        </div>
+                        <div id="quizResult" class="hidden text-center">
+                            <div class="mb-8">
+                                <div class="w-40 h-40 mx-auto mb-8 relative">
+                                    <svg class="progress-ring w-40 h-40" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="54" stroke="#e5e7eb" stroke-width="6" fill="transparent" class="dark:stroke-gray-600" />
+                                        <circle id="scoreCircle" cx="60" cy="60" r="54" stroke="#9333ea" stroke-width="6" fill="transparent" class="progress-ring-circle" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center"><span id="finalScore" class="text-4xl font-bold text-purple-600"></span></div>
+                                </div>
+                            </div>
+                            <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">🎉 答题完成！</h3>
+                            <p id="scoreMessage" class="text-xl text-gray-600 dark:text-gray-400 mb-8"></p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button onclick="restartQuiz()" class="px-8 py-4 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-all transform hover:scale-105 shadow-lg">🔄 重新开始</button>
+                                <button onclick="showSection('map')" class="px-8 py-4 border-2 border-purple-600 text-purple-600 dark:text-purple-400 rounded-full font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all transform hover:scale-105">📚 回顾案例</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 数据展示 (数据洞察) -->
+    <div id="stats" class="section hidden pt-24 min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center mb-20">
+                <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">创新发展数据洞察</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">以数据见证科技创新为山东高质量发展注入的强劲动能</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
+                    <h3 class="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-2">2024年生产总值</h3>
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400"><span class="counter" data-target="9.86">0</span> <span class="text-2xl">万亿元</span></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">全国第三</p>
+                </div>
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                    <h3 class="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-2">2024年高新技术企业</h3>
+                    <div class="text-4xl font-bold text-emerald-600 dark:text-emerald-400"><span class="counter" data-target="32000">0</span> <span class="text-2xl">家</span></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">创新动能强劲</p>
+                </div>
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
+                    <h3 class="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-2">2024年技术合同成交额</h3>
+                    <div class="text-4xl font-bold text-purple-600 dark:text-purple-400"><span class="counter" data-target="2500">0</span> <span class="text-2xl">亿元</span></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">成果转化加速</p>
+                </div>
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                    <h3 class="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-2">2024年规上工业增加值</h3>
+                    <div class="text-4xl font-bold text-orange-600 dark:text-orange-400">+<span class="counter" data-target="7.5">0</span><span class="text-2xl">%</span></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">高于全国平均</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="stat-card rounded-2xl p-8"><h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center"><div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>山东省近年GDP增长趋势</h3><div class="relative h-80"><canvas id="gdpChart"></canvas></div></div>
+                <div class="stat-card rounded-2xl p-8"><h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center"><div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>2024年山东三大产业结构</h3><div class="relative h-80 flex items-center justify-center"><canvas id="industryChart"></canvas></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 城市详情模态框 -->
+    <div id="cityModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-8">
+                    <div><h3 id="cityModalTitle" class="text-3xl font-bold text-gray-900 dark:text-white mb-2"></h3><div class="w-16 h-1 bg-blue-500 rounded-full"></div></div>
+                    <button onclick="closeCityModal()" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+                <div id="cityModalContent" class="text-gray-600 dark:text-gray-400 space-y-6 leading-relaxed"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 全局变量和通用函数 ---
+        let activeCharts = {};
+        let citySwiperInstance = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let currentQuizQuestions = [];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            const currentSection = document.getElementById(sectionId);
+            if (currentSection) {
+                currentSection.classList.remove('hidden');
+
+                gsap.fromTo(currentSection, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" });
+
+                if (sectionId === 'stats') { setTimeout(() => { startCounterAnimation(); initCharts(); }, 300); } 
+                else if (sectionId === 'map') { setTimeout(initCityGallery, 100); }
+                else if (sectionId === 'quiz' && questions.length === 0) { loadQuiz(); } // 只有在首次点击时加载
+            }
+        }
+
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+        function closeCityModal() {
+            const modal = document.getElementById('cityModal');
+            gsap.to(modal.querySelector('div'), { scale: 0.8, opacity: 0, duration: 0.3, ease: "power2.in", onComplete: () => { modal.classList.add('hidden'); } });
+        }
+        function getCityDetailData(cityName, type) { /* ... */ return { title: type, content: `<p>正在整理${cityName}在科技创新领域的${type}相关资料，敬请期待...</p>` }; }
+
+        // --- 城市画廊模块 (科技创新主题) ---
+        const cityGalleryData = [
+            { name: '济南市', slogan: '量子之光·超算之城', image: 'https://imagepphcloud.thepaper.cn/pph/image/222/493/893.jpg', description: '作为省会，济南集聚国家超级计算中心、量子技术研究院等国之重器，引领前沿科技突破，是山东科创大脑。'},
+            { name: '青岛市', slogan: '工业互联·海洋硅谷', image: 'https://cdn.pixabay.com/photo/2016/08/05/03/25/qingdao-1571518_1280.jpg', description: '以海尔卡奥斯平台打造“世界工业互联网之都”，以海洋试点国家实验室为核心，引领海洋科技发展，是产业数字化先锋。'},
+            { name: '淄博市', slogan: '新材名都·氢能高地', image: 'https://pic.vjshi.com/2022-11-16/34d62cd376834bdda0cffd58007794ad/00001.jpg?x-oss-process=style/watermark', description: '老工业城市成功转型，聚焦氟硅新材料、先进陶瓷等领域，并积极布局氢能产业链，打造“中国膜谷”，是材料创新重镇。' },
+            { name: '枣庄市', slogan: '北方锂都·能源革新', image: 'https://img1.qunarzz.com/travel/d7/1604/46/d745b6a5035de1f7.jpg', description: '从“煤城”到“锂都”，枣庄构建了完整的锂电新能源产业链，为资源枯竭型城市科技转型提供了“枣庄方案”。'},
+            { name: '东营市', slogan: '油田之上·装备之芯', image: 'https://img12.iqilu.com/10339/sucaiku/compress/202305/06/10d47b385ee944a0938bfddd96adae16.png', description: '依托胜利油田，发展成为全国最大的石油装备研发制造基地，并在盐碱地综合利用、现代高效农业中展现科技力量。'},
+            { name: '烟台市', slogan: '蓝药硅谷·海工重器', image: 'https://static.vrqjcs.com/web/work/2021/20210412102915282280.jpg', description: '集聚万华化学、荣昌生物等创新龙头，打造世界级绿色石化和生物医药产业集群。东方航天港开启商业航天新纪元。'},
+            { name: '潍坊市', slogan: '动力之城·VR之光', image: 'https://static.vrqjcs.com/web/work/2021/20210624143351016668.jpg', description: '潍柴动力引领高端装备制造，歌尔声学打造全球VR产业高地。国家农业开放发展综合试验区展现智慧农业创新。'},
+            { name: '济宁市', slogan: '智造高地·信息港湾', image: 'https://cdn.pixabay.com/photo/2015/05/21/16/51/shandong-777460_1280.jpg', description: '以山推股份为代表的工程机械产业智能化升级，华为大数据中心落户，正从“孔孟之乡”向“智造之城”迈进。'},
+            { name: '泰安市', slogan: '特电之都·传感世界', image: 'https://pic.2amok.com/20200608/18f5dad122f5b74d019c447c4879b3a3_00003.jpg', description: '全国重要的特高压输变电装备和智能传感器生产基地，在“双碳”目标下推动能源技术和新型建材创新。'},
+            { name: '威海市', slogan: '医械硅谷·打印王国', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.320fe39e55717dd8b5b9a73f43541482?rik=m6R5JFO0WM7G5A&riu=http%3a%2f%2finvestweihai.cn%2fprofile%2fpicture%2ff7f211b7b907d0267a772964e056be32.jpg%3bjsessionid%3d080077F908CB493FD4E2D9D91117C433&ehk=t7l6wyjyUzK9vYS8jSLXdeW4qp8kT06ZKkHSZ3KHZ8w%3d&risl=&pid=ImgRaw&r=0', description: '全球最大的打印机生产基地和全国领先的医疗器械产业集群，在碳纤维、电子信息等高技术领域持续发力。'},
+            { name: '日照市', slogan: '钢铁智造·汽车新城', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.0ab6f3acc7a70a398dcaf7122d3e2c7e?rik=nn1B6MBfkxmtVQ&riu=http%3a%2f%2fimg.pconline.com.cn%2fimages%2fupload%2fupc%2ftx%2fphotoblog%2f1109%2f23%2fc0%2f9052256_9052256_1316735392718.jpg&ehk=9wXa21iOabbdjyq%2frL2e332hH%2f9uDNXXzRFLfrbkG5Y%3d&risl=&pid=ImgRaw&r=0', description: '依托世界级深水良港，建设先进钢铁精品基地和汽车整车及零部件产业集群，是“港产城”融合创新的典范。'},
+            { name: '临沂市', slogan: '物流大脑·智联全球', image: 'https://img.zcool.cn/community/0191655dc9167ea8012163bab35799.jpg', description: '以科技创新驱动“物流之都”转型升级，发展智慧物流、供应链金融，并以临工集团为龙头推动工程机械智能化。'},
+            { name: '德州市', slogan: '中国食谷·生物之芯', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.e73da2e75c6f8fb0b0d7822d0228b85c?rik=A5vaVOxMwvl23w&riu=http%3a%2f%2fn.sinaimg.cn%2fsinakd10122%2f56%2fw2000h1256%2f20200610%2f572c-iuvaazp0138823.jpg&ehk=DCgrtxOMMbew%2fPtvRiGyflsFxIkD9RPaPbapbdQ%2frHI%3d&risl=&pid=ImgRaw&r=0', description: '打造“中国食品名市”，在生物技术、功能糖、氨基酸等领域全球领先，是“京津冀”产业协同创新的重要节点。'},
+            { name: '聊城市', slogan: '有色金属·绿色化工', image: 'https://pic4.zhimg.com/v2-1c9fa0ffdf6b6372034131932572e69e_r.jpg', description: '以信发、鲁西化工为龙头，推动有色金属新材料和高端化工产业的绿色化、智能化转型，展现传统产业的创新活力。'},
+            { name: '滨州市', slogan: '世界铝谷·产教之城', image: 'https://p1.ssl.qhimg.com/t01df1339ccde901974.jpg', description: '建设世界高端铝业基地，并以国家产教融合试点城市为契机，探索“企业出题、高校解题”的协同创新模式。'},
+            { name: '菏泽市', slogan: '北方药谷·牡丹芯科技', image: 'https://boot-img.xuexi.cn/contribute_img/20190218165249/5078568957238911.jpg', description: '打造“中国北方医药城”，在生物医药、牡丹深加工（如牡丹籽油）等领域展现科技实力，是“后来居上”的创新典范。'}
+        ];
+
+        function initCityGallery() {
+            const wrapper = document.querySelector('.city-swiper .swiper-wrapper');
+            if (!wrapper) return;
+            if (citySwiperInstance) { citySwiperInstance.destroy(true, true); citySwiperInstance = null; }
+            wrapper.innerHTML = cityGalleryData.map(city => `<div class="swiper-slide" style="background-image:url('${city.image}')"><div class="relative z-20 text-white p-8 max-w-4xl mx-auto slide-content"><div class="bg-black/40 backdrop-blur-md rounded-2xl p-8 border border-white/20"><h3 class="text-4xl md:text-6xl font-bold mb-3">${city.name}</h3><p class="text-2xl md:text-3xl mb-6 opacity-90 font-medium">${city.slogan}</p><p class="text-lg md:text-xl leading-relaxed opacity-95 mb-6">${city.description}</p><div class="flex flex-wrap gap-3"><button onclick="alert('正在开发${city.name}的详细科技案例...')" class="city-detail-btn px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>查看详情</span></button></div></div></div></div>`).join('');
+            citySwiperInstance = new Swiper('.city-swiper', { loop: true, effect: 'fade', fadeEffect: { crossFade: true }, autoplay: { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true }, pagination: { el: '.swiper-pagination', clickable: true, dynamicBullets: true }, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, keyboard: { enabled: true }, });
+        }
+
+        // --- 知识问答模块 ---
+        function loadQuiz() {
+            try {
+                const quizJson = document.getElementById('quizData').textContent;
+                questions = JSON.parse(quizJson);
+
+                if (questions.length === 0) {
+                    // 如果题库为空，显示提示信息
+                    document.getElementById('quizLoading').innerHTML = `
+                        <div class="text-center text-gray-600 dark:text-gray-400 py-12">
+                            <svg class="w-12 h-12 mx-auto mb-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                            <p class="text-lg mt-2">科技主题题库正在火速建设中，敬请期待！</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('quizLoading').classList.add('hidden');
+                document.getElementById('quizContent').classList.remove('hidden');
+                restartQuiz();
+            } catch (error) {
+                console.error('Quiz loading error:', error);
+                document.getElementById('quizLoading').innerHTML = `<div class="text-red-500">题库加载失败！</div>`;
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            const numQuestionsToTake = Math.min(5, shuffledQuestions.length); // 最多取5道题或全部题目
+            currentQuizQuestions = shuffledQuestions.slice(0, numQuestionsToTake);
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            showNextQuestion();
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex >= currentQuizQuestions.length) { showQuizResult(); return; }
+            const question = currentQuizQuestions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('questionCounter').textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${currentQuizQuestions.length} 题`;
+            document.getElementById('progressBar').style.width = `${((currentQuestionIndex + 1) / currentQuizQuestions.length) * 100}%`;
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option w-full p-6 text-left border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-purple-300 dark:hover:border-purple-600 transition-all text-lg';
+                button.innerHTML = `<div class="flex items-center space-x-4"><div class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center font-bold text-gray-500 dark:text-gray-400">${String.fromCharCode(65 + index)}</div><span>${option}</span></div>`;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+            gsap.fromTo('#questionContainer', { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" });
+        }
+
+        function selectAnswer(selectedIndex) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(option => { option.disabled = true; option.style.pointerEvents = 'none'; });
+            const correctIndex = currentQuizQuestions[currentQuestionIndex].correct;
+            if (selectedIndex === correctIndex) {
+                score++;
+                options[selectedIndex].classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/50');
+                options[selectedIndex].querySelector('div > div').classList.add('bg-green-500', 'text-white', 'border-green-500');
+                gsap.to(options[selectedIndex], { scale: 1.02, duration: 0.3, yoyo: true, repeat: 1 });
+            } else {
+                options[selectedIndex].classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/50');
+                options[selectedIndex].querySelector('div > div').classList.add('bg-red-500', 'text-white', 'border-red-500');
+                options[correctIndex].classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/50');
+                options[correctIndex].querySelector('div > div').classList.add('bg-green-500', 'text-white', 'border-green-500');
+                gsap.to(options[selectedIndex], { x: [-10, 10, -10, 10, 0], duration: 0.5 });
+            }
+            setTimeout(() => { currentQuestionIndex++; showNextQuestion(); }, 2000);
+        }
+
+        function showQuizResult() {
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('quizResult').classList.remove('hidden');
+            const percentage = Math.round((score / currentQuizQuestions.length) * 100);
+            document.getElementById('finalScore').textContent = `${percentage}%`;
+            let message = '';
+            if (percentage === 100) { message = "完美满分！你是山东科技创新专家！"; }
+            else if (percentage >= 80) { message = "表现优秀！你对山东科创有深入了解！"; }
+            else if (percentage >= 60) { message = "成绩良好！继续学习山东的发展成就！"; }
+            else { message = "继续加油！山东有很多值得探索的精彩内容！"; }
+            document.getElementById('scoreMessage').textContent = message;
+            const circle = document.getElementById('scoreCircle');
+            const circumference = 2 * Math.PI * 54;
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = circumference;
+            setTimeout(() => { gsap.to(circle, { strokeDashoffset: circumference - (percentage / 100) * circumference, duration: 2, ease: "power2.out" }); }, 500);
+            gsap.fromTo('#quizResult', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.7)" });
+        }
+
+        // --- 数据展示模块 ---
+        function startCounterAnimation() {
+            const counters = document.querySelectorAll('.counter');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) {
+                    const counter = entry.target; const target = +counter.getAttribute('data-target');
+                    gsap.fromTo(counter, { innerText: 0 }, { duration: 2.5, innerText: target, roundProps: "innerText", ease: "power2.out", onUpdate: function () { const current = parseFloat(counter.innerText); counter.textContent = current.toFixed(current % 1 === 0 ? 0 : 2); } });
+                    observer.unobserve(counter);
+                } });
+            });
+            counters.forEach(counter => observer.observe(counter));
+        }
+
+        function initCharts() {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const labelColor = isDarkMode ? '#cbd5e1' : '#4b5563';
+            Object.values(activeCharts).forEach(chart => chart.destroy()); activeCharts = {};
+            const gdpCtx = document.getElementById('gdpChart');
+            if (gdpCtx) { activeCharts.gdp = new Chart(gdpCtx.getContext('2d'), { type: 'line', data: { labels: ['2020', '2021', '2022', '2023', '2024'], datasets: [{ label: 'GDP(万亿元)', data: [7.31, 8.31, 8.74, 9.21, 9.86], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#3b82f6', pointBorderColor: '#ffffff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, min: 6, grid: { color: gridColor }, ticks: { color: labelColor, callback: value => value + '万亿' } }, x: { grid: { color: gridColor }, ticks: { color: labelColor } } } } }); }
+            const industryCtx = document.getElementById('industryChart');
+            if (industryCtx) { activeCharts.industry = new Chart(industryCtx.getContext('2d'), { type: 'doughnut', data: { labels: ['第一产业', '第二产业', '第三产业'], datasets: [{ data: [7.2, 39.1, 53.7], backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(245, 158, 11, 0.8)'], borderColor: ['#22c55e', '#3b82f6', '#f59e0b'], borderWidth: 2, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: labelColor, padding: 20, usePointStyle: true, font: { size: 14 } } }, tooltip: { callbacks: { label: context => context.label + ': ' + context.parsed + '%' } } }, cutout: '60%' } }); }
+        }
+
+        // --- 页面初始化 ---
+        document.addEventListener('DOMContentLoaded', function () {
+            gsap.timeline().from('nav', { duration: 1, y: -100, opacity: 0, ease: "power2.out" }).from('#home h1', { duration: 1.5, y: 100, opacity: 0, ease: "power2.out" }, "-=0.5").from('#home p', { duration: 1, y: 50, opacity: 0, ease: "power2.out" }, "-=0.8");
+            initCityGallery();
+            loadQuiz(); // 页面加载时就尝试加载题库
+            const darkModeObserver = new MutationObserver(() => { if (Object.keys(activeCharts).length > 0) { setTimeout(initCharts, 100); } });
+            darkModeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeCityModal(); } });
+        document.getElementById('cityModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) { closeCityModal(); } });
+    </script>
+</body>
+
+</html>
